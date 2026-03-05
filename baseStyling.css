@@ -55,11 +55,6 @@ div {
 .highlightDisplayButton {
 }
 
-#calendarContainer {
-  height: 75vh;
-  width: 100%;
-}
-
 #calendarActionButtonsContainer {
   display: flex;
   flex-direction: column;
