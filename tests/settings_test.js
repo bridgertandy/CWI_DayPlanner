@@ -1,143 +1,298 @@
+import localStorageMock from "./mockStorage.js";
+
 import appSettings from "../modules/settings.js";
 
-/**
- * Test suite for the appSettings module, covering validation of setting assignments and persistence to localStorage.
- * Each setting is tested with both valid and invalid values, with assertions to verify correct behavior.
- * Default values are tested by calling restoreDefaults() and verifying that settings are reset correctly.
- * The save and load functionality is also tested to ensure settings are correctly persisted and restored.
- */
 function settingsTests() {
-  console.log("Running settings module test suite...");
-  appSettings.restoreDefaults();
+  let passed = 0;
+  let failed = 0;
 
-  // Test valid and invalid assignments for each setting, with assertions to verify
-  // that invalid values do not change the setting and valid values do change it
-  console.log("Attempting to assign invalid value to lightMode...");
-  appSettings.lightMode = "fail"; // Invalid value
-  console.assert(
-    appSettings.lightMode === "light",
-    "lightMode should remain 'light' after invalid assignment",
+  // Replace localStorage with mock version
+  localStorageMock.initialize();
+
+  // ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+  function expectValue(label, actual, expected) {
+    if (actual === expected) {
+      console.log(`✅ PASS — "${label}"`);
+      passed++;
+    } else {
+      console.error(
+        `❌ FAIL — "${label}": expected ${JSON.stringify(expected)} but got ${JSON.stringify(actual)}.`,
+      );
+      failed++;
+    }
+  }
+
+  // ─── DEFAULTS ─────────────────────────────────────────────────────────────────
+
+  console.group("restoreDefaults()");
+
+  appSettings.restoreDefaults();
+  expectValue("lightMode defaults to 'light'", appSettings.lightMode, "light");
+  expectValue(
+    "tempUnit defaults to 'Fahrenheit'",
+    appSettings.tempUnit,
+    "Fahrenheit",
+  );
+  expectValue("colorTheme defaults to 'blue'", appSettings.colorTheme, "blue");
+  expectValue(
+    "firstDayOfWeek defaults to 'Sunday'",
+    appSettings.firstDayOfWeek,
+    "Sunday",
+  );
+  expectValue(
+    "displayHolidays defaults to true",
+    appSettings.displayHolidays,
+    true,
   );
 
-  console.log("Attempting to assign valid value to lightMode...");
+  console.groupEnd();
+
+  // ─── LIGHTMODE ────────────────────────────────────────────────────────────────
+
+  console.group("lightMode");
+
+  appSettings.restoreDefaults();
+  appSettings.lightMode = "fail";
+  expectValue(
+    "Invalid value does not change lightMode",
+    appSettings.lightMode,
+    "light",
+  );
   appSettings.lightMode = "dark";
-  console.assert(
-    appSettings.lightMode === "dark",
-    "lightMode should be 'dark' after valid assignment",
+  expectValue("Valid value 'dark' is accepted", appSettings.lightMode, "dark");
+  appSettings.lightMode = "auto";
+  expectValue("Valid value 'auto' is accepted", appSettings.lightMode, "auto");
+  appSettings.lightMode = "light";
+  expectValue(
+    "Valid value 'light' is accepted",
+    appSettings.lightMode,
+    "light",
   );
 
-  console.log("Attempting to assign invalid value to tempUnit...");
-  appSettings.tempUnit = "Kelvin"; // Invalid value
-  console.assert(
-    appSettings.tempUnit === "Fahrenheit",
-    "tempUnit should remain 'Fahrenheit' after invalid assignment",
-  );
+  console.groupEnd();
 
-  console.log("Attempting to assign valid value to tempUnit...");
-  appSettings.tempUnit = "Celsius";
-  console.assert(
-    appSettings.tempUnit === "Celsius",
-    "tempUnit should be 'Celsius' after valid assignment",
-  );
+  // ─── TEMPUNIT ─────────────────────────────────────────────────────────────────
 
-  console.log("Attempting to assign invalid value to colorTheme...");
-  appSettings.colorTheme = "invalid"; // Invalid value
-  console.assert(
-    appSettings.colorTheme === "blue",
-    "colorTheme should remain 'blue' after invalid assignment",
-  );
+  console.group("tempUnit");
 
-  console.log("Attempting to assign valid value to colorTheme...");
-  appSettings.colorTheme = "purple";
-  console.assert(
-    appSettings.colorTheme === "purple",
-    "colorTheme should be 'purple' after valid assignment",
-  );
-
-  console.log("Attempting to assign invalid value to firstDayOfWeek...");
-  appSettings.firstDayOfWeek = "Tuesday"; // Invalid value
-  console.assert(
-    appSettings.firstDayOfWeek === "Sunday",
-    "firstDayOfWeek should remain 'Sunday' after invalid assignment",
-  );
-
-  console.log("Attempting to assign valid value to firstDayOfWeek...");
-  appSettings.firstDayOfWeek = "Monday";
-  console.assert(
-    appSettings.firstDayOfWeek === "Monday",
-    "firstDayOfWeek should be 'Monday' after valid assignment",
-  );
-
-  console.log("Attempting to assign invalid value to displayHolidays...");
-  appSettings.displayHolidays = "yes"; // Invalid value
-  console.assert(
-    appSettings.displayHolidays === true,
-    "displayHolidays should remain true after invalid assignment",
-  );
-
-  console.log("Attempting to assign valid value to displayHolidays...");
-  appSettings.displayHolidays = false;
-  console.assert(
-    appSettings.displayHolidays === false,
-    "displayHolidays should be false after valid assignment",
-  );
-
-  // Test saving and loading settings to/from localStorage, with assertions to verify
-  // that settings are correctly restored after loading
-
-  console.log("Testing save and load settings...");
-  console.log("Saving current settings to localStorage...");
-  appSettings.saveSettings();
-
-  console.log("Restoring defaults before loading settings...");
   appSettings.restoreDefaults();
-  console.log("Checking that defaults were restored correctly...");
-  console.assert(
-    appSettings.lightMode === "light",
-    "lightMode should be 'light' after restoring defaults",
+  appSettings.tempUnit = "Kelvin";
+  expectValue(
+    "Invalid value does not change tempUnit",
+    appSettings.tempUnit,
+    "Fahrenheit",
   );
-  console.assert(
-    appSettings.tempUnit === "Fahrenheit",
-    "tempUnit should be 'Fahrenheit' after restoring defaults",
+  appSettings.tempUnit = "Celsius";
+  expectValue(
+    "Valid value 'Celsius' is accepted",
+    appSettings.tempUnit,
+    "Celsius",
   );
-  console.assert(
-    appSettings.colorTheme === "blue",
-    "colorTheme should be 'blue' after restoring defaults",
-  );
-  console.assert(
-    appSettings.firstDayOfWeek === "Sunday",
-    "firstDayOfWeek should be 'Sunday' after restoring defaults",
-  );
-  console.assert(
-    appSettings.displayHolidays === true,
-    "displayHolidays should be true after restoring defaults",
+  appSettings.tempUnit = "Fahrenheit";
+  expectValue(
+    "Valid value 'Fahrenheit' is accepted",
+    appSettings.tempUnit,
+    "Fahrenheit",
   );
 
-  console.log("Loading previous settings from localStorage...");
+  console.groupEnd();
+
+  // ─── COLORTHEME ───────────────────────────────────────────────────────────────
+
+  console.group("colorTheme");
+
+  appSettings.restoreDefaults();
+  appSettings.colorTheme = "invalid";
+  expectValue(
+    "Invalid value does not change colorTheme",
+    appSettings.colorTheme,
+    "blue",
+  );
+  appSettings.colorTheme = "purple";
+  expectValue(
+    "Valid value 'purple' is accepted",
+    appSettings.colorTheme,
+    "purple",
+  );
+  appSettings.colorTheme = "pink";
+  expectValue("Valid value 'pink' is accepted", appSettings.colorTheme, "pink");
+  appSettings.colorTheme = "red";
+  expectValue("Valid value 'red' is accepted", appSettings.colorTheme, "red");
+  appSettings.colorTheme = "orange";
+  expectValue(
+    "Valid value 'orange' is accepted",
+    appSettings.colorTheme,
+    "orange",
+  );
+  appSettings.colorTheme = "yellow";
+  expectValue(
+    "Valid value 'yellow' is accepted",
+    appSettings.colorTheme,
+    "yellow",
+  );
+  appSettings.colorTheme = "green";
+  expectValue(
+    "Valid value 'green' is accepted",
+    appSettings.colorTheme,
+    "green",
+  );
+  appSettings.colorTheme = "blue";
+  expectValue("Valid value 'blue' is accepted", appSettings.colorTheme, "blue");
+
+  console.groupEnd();
+
+  // ─── FIRSTDAYOFWEEK ───────────────────────────────────────────────────────────
+
+  console.group("firstDayOfWeek");
+
+  appSettings.restoreDefaults();
+  appSettings.firstDayOfWeek = "Tuesday";
+  expectValue(
+    "Invalid value does not change firstDayOfWeek",
+    appSettings.firstDayOfWeek,
+    "Sunday",
+  );
+  appSettings.firstDayOfWeek = "Monday";
+  expectValue(
+    "Valid value 'Monday' is accepted",
+    appSettings.firstDayOfWeek,
+    "Monday",
+  );
+  appSettings.firstDayOfWeek = "Sunday";
+  expectValue(
+    "Valid value 'Sunday' is accepted",
+    appSettings.firstDayOfWeek,
+    "Sunday",
+  );
+
+  console.groupEnd();
+
+  // ─── DISPLAYHOLIDAYS ──────────────────────────────────────────────────────────
+
+  console.group("displayHolidays");
+
+  appSettings.restoreDefaults();
+  appSettings.displayHolidays = "yes";
+  expectValue(
+    "Invalid value does not change displayHolidays",
+    appSettings.displayHolidays,
+    true,
+  );
+  appSettings.displayHolidays = 1;
+  expectValue(
+    "Truthy non-boolean does not change displayHolidays",
+    appSettings.displayHolidays,
+    true,
+  );
+  appSettings.displayHolidays = false;
+  expectValue(
+    "Valid value false is accepted",
+    appSettings.displayHolidays,
+    false,
+  );
+  appSettings.displayHolidays = true;
+  expectValue(
+    "Valid value true is accepted",
+    appSettings.displayHolidays,
+    true,
+  );
+
+  console.groupEnd();
+
+  // ─── SAVE AND LOAD ────────────────────────────────────────────────────────────
+
+  console.group("saveSettings() and loadSettings()");
+
+  // Set non-default values and save
+  appSettings.restoreDefaults();
+  appSettings.lightMode = "dark";
+  appSettings.tempUnit = "Celsius";
+  appSettings.colorTheme = "purple";
+  appSettings.firstDayOfWeek = "Monday";
+  appSettings.displayHolidays = false;
+  appSettings.saveSettings();
+  expectValue(
+    "Settings key exists in localStorage after save",
+    localStorage.getItem("DayPlannerSettings") !== null,
+    true,
+  );
+
+  // Restore defaults then load — saved values should come back
+  appSettings.restoreDefaults();
   appSettings.loadSettings();
-  console.log("Checking that settings were loaded correctly...");
-  console.assert(
-    appSettings.lightMode === "dark",
-    "lightMode should be 'dark' after saving and loading settings",
+  expectValue(
+    "lightMode restored to 'dark' after load",
+    appSettings.lightMode,
+    "dark",
   );
-  console.assert(
-    appSettings.tempUnit === "Celsius",
-    "tempUnit should be 'Celsius' after saving and loading settings",
+  expectValue(
+    "tempUnit restored to 'Celsius' after load",
+    appSettings.tempUnit,
+    "Celsius",
   );
-  console.assert(
-    appSettings.colorTheme === "purple",
-    "colorTheme should be 'purple' after saving and loading settings",
+  expectValue(
+    "colorTheme restored to 'purple' after load",
+    appSettings.colorTheme,
+    "purple",
   );
-  console.assert(
-    appSettings.firstDayOfWeek === "Monday",
-    "firstDayOfWeek should be 'Monday' after saving and loading settings",
+  expectValue(
+    "firstDayOfWeek restored to 'Monday' after load",
+    appSettings.firstDayOfWeek,
+    "Monday",
   );
-  console.assert(
-    appSettings.displayHolidays === false,
-    "displayHolidays should be false after saving and loading settings",
+  expectValue(
+    "displayHolidays restored to false after load",
+    appSettings.displayHolidays,
+    false,
   );
 
-  console.log("AppSettings test suite completed.");
+  // Corrupt the stored JSON and verify loadSettings() handles it gracefully without throwing
+  localStorage.setItem("DayPlannerSettings", "this is not valid json {{{");
+  try {
+    appSettings.loadSettings();
+    console.log(
+      `✅ PASS — "loadSettings() handles corrupted JSON without throwing"`,
+    );
+    passed++;
+  } catch (e) {
+    console.error(
+      `❌ FAIL — "loadSettings() handles corrupted JSON without throwing": threw → ${e.message}`,
+    );
+    failed++;
+  }
+
+  // Verify loadSettings() handles missing key gracefully
+  localStorage.removeItem("DayPlannerSettings");
+  try {
+    appSettings.loadSettings();
+    console.log(
+      `✅ PASS — "loadSettings() handles missing localStorage key without throwing"`,
+    );
+    passed++;
+  } catch (e) {
+    console.error(
+      `❌ FAIL — "loadSettings() handles missing localStorage key without throwing": threw → ${e.message}`,
+    );
+    failed++;
+  }
+
+  console.groupEnd();
+
+  // ─── SUMMARY ──────────────────────────────────────────────────────────────────
+
+  // Restore localStorage and reset settings to defaults
+  localStorageMock.restore();
+  appSettings.restoreDefaults();
+
+  console.log(
+    `\n📋 Results: ${passed} passed, ${failed} failed out of ${passed + failed} tests.`,
+  );
+  if (failed === 0) {
+    console.log("🎉 All tests passed!");
+  } else {
+    console.warn(`⚠️  ${failed} test(s) failed. See above for details.`);
+  }
 }
 
 export default settingsTests;
