@@ -7,6 +7,17 @@ const eventTitleInput = document.getElementById("eventTitle");
 const endTimeInput = document.getElementById("eventEndTime");
 const eventDateInput = document.getElementById("eventDate");
 
+//C-3 editing constants
+const eventForm = document.getElementById("eventForm");
+const eventFormTitle = document.getElementById("eventFormTitle");
+const startTimeInput = document.getElementById("eventStartTime");
+const eventColorInput = document.getElementById("eventColor");
+const eventAddressInput = document.getElementById("eventAddress");
+const eventDescriptionInput = document.getElementById("eventDescription");
+
+//edit state variable
+let editingEventUID = null;
+
 /**
  * Initializes the event manager by setting up event listeners for the "Add Event" button, "Cancel" button, and the event form submission.
  */
@@ -16,6 +27,7 @@ function initializeEventManager() {
   const eventForm = document.getElementById("eventForm");
 
   addEventButton.addEventListener("click", () => {
+    prepareAddEventMode();
     showEventCreator();
   });
 
@@ -27,6 +39,20 @@ function initializeEventManager() {
     e.preventDefault();
     submitEvent(e.target);
     // console.log(addEventButton, cancelEventButton, eventForm);
+  });
+
+  //additional listener for 'edit event' option.  Reads clicks on event targets and stores eventUID then runs openEventEditor() based on eventUID/
+  const calendarEventsLayer = document.getElementById("calendarEventsLayer");
+
+  calendarEventsLayer.addEventListener("click", (event) => {
+    const clickedEventButton = event.target.closest("[data-event-id]");
+
+    if (!clickedEventButton) {
+      return;
+    }
+
+    const eventUID = clickedEventButton.dataset.eventId;
+    openEventEditor(eventUID);
   });
 }
 
@@ -45,7 +71,8 @@ function submitEvent(eventForm) {
     return;
   }
   // Generate and assign UID, save event, and hide the event creation form
-  const id = generateUID();
+  //*Caleb edit.*  adjusted the id const to check if editingEventUID has a value to keep that value, otherwise run generateUID() function.
+  const id = editingEventUID ?? generateUID();
   eventProps.UID = id;
   const newEvent = new CalendarEvent(eventProps);
   StorageManager.saveEvent(newEvent);
@@ -130,6 +157,55 @@ function hideEventCreator() {
   eventPopupContainer.classList.remove("visible");
   eventPopupContainer.classList.add("hidden");
   eventForm.reset();
+  editingEventUID = null;
+
+  if (eventFormTitle) {
+    eventFormTitle.textContent = "Add Event";
+  }
 }
 
-export { initializeEventManager };
+/**
+ * functions for editing events for C-3
+ */
+//This function is used to reset back to a blank slate for switching from edit mode back to add mode.  function added to initializeEventManager() in addEventButton.addEventListener to reset on click.
+function prepareAddEventMode() {
+  editingEventUID = null;
+  if (eventFormTitle) {
+    eventFormTitle.textContent = "Add Event";
+  }
+  //reset function is a cool prebuilt brower function that resets to default.  This clears data for when we switch back to 'Add Event' mode. just thought it was cool.
+  eventForm.reset();
+}
+
+//Function to open 'edit event' mode and, and display contents of event in correct fields
+function openEventEditor(eventUID) {
+  const allEvents = StorageManager.loadAllEvents();
+  // checks through event array and returns on a matching value to what's clicked.  If anyone nows an easier way then combing all events let me know.
+  const eventToEdit = allEvents.find((event) => event.UID === eventUID);
+
+  //failure guardrail
+  if (!eventToEdit) {
+    console.error(`could not find event with UID: ${eventUID}`);
+    return;
+  }
+
+  editingEventUID = eventUID;
+
+  //sets popup title to Edit instead of Add
+  if (eventFormTitle) {
+    eventFormTitle.textContent = "Edit Event";
+  }
+
+  //saveds stored eventUID form values to populate in the correct locations.
+  eventTitleInput.value = eventToEdit.title;
+  eventDateInput.value = eventToEdit.date;
+  startTimeInput.value = eventToEdit.timeStart;
+  endTimeInput.value = eventToEdit.timeEnd;
+  eventColorInput.value = eventToEdit.color ?? "#ffffff";
+  eventAddressInput.value = eventToEdit.address ?? "";
+  eventDescriptionInput.value = eventToEdit.description ?? "";
+
+  showEventCreator();
+}
+
+export { initializeEventManager, openEventEditor };
