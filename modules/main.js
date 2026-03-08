@@ -12,3 +12,6 @@ const allEvents = StorageManager.loadAllEvents();
 
 // Initialize listeners for the event manager
 initializeEventManager();
+
+// load weather data
+loadWeatherDisplay();
