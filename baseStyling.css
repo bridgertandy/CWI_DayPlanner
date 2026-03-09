@@ -45,7 +45,19 @@ div {
   align-items: center;
 }
 
-#headerWeatherContainer {
+#headerWeatherContainer #weatherDisplay {
+  border: none;
+  padding: 0 0.1rem;
+}
+
+#headerWeatherContainer #weatherDisplay p {
+  display: inline-block;
+  margin-right: 0.1rem;
+}
+
+#headerWeatherContainer img {
+  width: 2rem;
+  vertical-align: middle;
 }
 
 #displayButtonsContainer {

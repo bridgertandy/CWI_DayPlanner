@@ -4,11 +4,15 @@ import { initializeCalendarNavigation } from "./calendar/calendarNavigationButto
 import { initializeCalendarDisplayButtons } from "./calendar/calendarDisplayButtons.js";
 import StorageManager from "./dataStorage.js";
 import { initializeEventManager } from "./eventManager.js";
+import { loadWeatherDisplay } from "./weatherDisplay.js";
 import appSettings from "./settings.js";
 
 appSettings.loadSettings();
 const allEvents = StorageManager.loadAllEvents();
 initializeEventManager();
+
+// load weather data
+loadWeatherDisplay();
 
 {
     const viewDate = new Date();
@@ -17,7 +21,6 @@ initializeEventManager();
 
     // Renders the calendar
     function render() {
-        console.log("Rendering calendar...", calendarState.viewDate, calendarState.calendarView);
         renderCalendarView(allEvents, calendarState.viewDate, calendarState.calendarView);
         updateHeaderDate(calendarState); // Updates the header date
     }

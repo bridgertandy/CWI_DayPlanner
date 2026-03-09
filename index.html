@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="dayCalendar.css" />
     <script src="./modules/main.js" type="module"></script>
   </head>
-
   <body>
     <!--  -->
     <!-- Top of the app with title, today's date, and weather container -->
@@ -20,7 +19,11 @@
       <h3 id="appTitle">Day Planner</h3>
       <div id="headerInfoContainer">
         <div id="headerDateContainer">Tuesday, Feb 10</div>
-        <div id="headerWeatherContainer">🌞 72&deg;</div>
+        <div id="headerWeatherContainer">
+          <div id="weatherDisplay">
+            <p>Weather loading...</p>
+          </div>
+        </div>
       </div>
       <!-- Holds the buttons that swap calendar view between Day, Week, Month -->
       <div id="displayButtonsContainer">
