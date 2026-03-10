@@ -38,7 +38,26 @@ div {
   width: 100%;
 }
 
-#headerWeatherContainer {
+#headerDateContainer {
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#headerWeatherContainer #weatherDisplay {
+  border: none;
+  padding: 0 0.1rem;
+}
+
+#headerWeatherContainer #weatherDisplay p {
+  display: inline-block;
+  margin-right: 0.1rem;
+}
+
+#headerWeatherContainer img {
+  width: 2rem;
+  vertical-align: middle;
 }
 
 #displayButtonsContainer {
@@ -50,9 +69,14 @@ div {
 
 .displayChangeButton {
   width: 4rem;
+  height: 1.375rem;
 }
 
 .highlightDisplayButton {
+  background-color: black;
+  border: 1px solid black;
+  border-radius: 0.125rem;
+  color: white;
 }
 
 #calendarActionButtonsContainer {
@@ -70,6 +94,20 @@ div {
   justify-content: center;
   gap: 1rem;
   padding: 0.25rem;
+  border: none;
+}
+
+.calendarNavButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 1.75rem;
+  width: 1.75rem;
+
+  & img {
+    height: 1rem;
+    width: 1rem;
+  }
 }
 
 #addEventButton {

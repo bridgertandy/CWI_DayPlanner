@@ -7,9 +7,9 @@
     <link rel="stylesheet" href="baseStyling.css" />
     <link rel="stylesheet" href="eventForm.css" />
     <link rel="stylesheet" href="calendar.css" />
+    <link rel="stylesheet" href="dayCalendar.css" />
     <script src="./modules/main.js" type="module"></script>
   </head>
-
   <body>
     <!--  -->
     <!-- Top of the app with title, today's date, and weather container -->
@@ -19,7 +19,12 @@
       <h3 id="appTitle">Day Planner</h3>
       <div id="headerInfoContainer">
         <div id="headerDateContainer">Tuesday, Feb 10</div>
-        <div id="headerWeatherContainer">🌞 72&deg;</div>
+
+        <div id="headerWeatherContainer">
+          <div id="weatherDisplay">
+            <p>Weather loading...</p>
+          </div>
+        </div>
       </div>
       <!-- Holds the buttons that swap calendar view between Day, Week, Month -->
       <div id="displayButtonsContainer">
@@ -41,7 +46,7 @@
           <option value="30">30 minutes</option>
         </select>
       </div>
-      <div id="calendarViewArea">
+      <div id="calendarViewArea" data-calendar-view="day">
         <div id="calendarDayContentWrapper" class="calendarDayContent">
           <div
             id="calendarTimeLabelsColumn"
@@ -60,6 +65,11 @@
             <div id="calendarEventsLayer" class="calendarEventsLayer"></div>
           </div>
         </div>
+        <div id="calendarWeekContentWrapper" class="calendarWeekContent"></div>
+        <div
+          id="calendarMonthContentWrapper"
+          class="calendarMonthContent"
+        ></div>
       </div>
     </div>
 
@@ -69,8 +79,22 @@
     <!--  -->
     <div id="calendarActionButtonsContainer">
       <div id="calendarNavButtonsContainer">
-        <button>Do stuff</button>
-        <button>Do Stuff</button>
+        <button
+          id="prevNavButton"
+          class="calendarNavButton"
+          type="button"
+          aria-label="Previous day, week, or month"
+        >
+          <img src="./assets/icons/chevron-left.svg" />
+        </button>
+        <button
+          id="nextNavButton"
+          class="calendarNavButton"
+          type="button"
+          aria-label="Next day, week, or month"
+        >
+          <img src="./assets/icons/chevron-right.svg" />
+        </button>
       </div>
       <button id="addEventButton">Add Event</button>
     </div>

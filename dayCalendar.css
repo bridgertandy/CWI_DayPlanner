@@ -1,0 +1,208 @@
+/* Two-column layout: time labels | day grid */
+.calendarDayContent {
+  /* Counterintuitive to use display: hidden, but we need to hide the content until the calendar view is set to day */
+  display: hidden;
+  flex-direction: row;
+  min-height: 100%;
+  border: none;
+}
+
+/* Left column: time labels (Google-style narrow strip) */
+.calendarTimeLabelsColumn {
+  flex-shrink: 0;
+  padding-left: 0.5rem;
+  padding-top: 0.125rem;
+  border: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0%;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.calendarTimeSlotRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding-right: 0.5rem;
+  border: none;
+}
+
+.calendarTimeSlotRow[data-active="true"] .calendarTimeLabel {
+  color: #1a73e8;
+  font-weight: 600;
+}
+
+.calendarTimeLabel {
+  font-size: 0.625rem;
+  color: #70757a;
+  white-space: nowrap;
+}
+
+/* Right column: day grid (grid lines + now line + events) */
+.calendarDayGridColumn {
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  background-color: #fff;
+  border: none;
+  border-radius: 0%;
+}
+
+.calendarHourGridLines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  border: none;
+}
+
+.calendarHourGridLine {
+  flex-shrink: 0;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0%;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+/* Current time line (Google-style red line) */
+.calendarNowLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #ea4335;
+  z-index: 2;
+  pointer-events: none;
+  border: none;
+}
+
+.calendarNowLine::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  background-color: #ea4335;
+  border-radius: 50%;
+}
+
+/* Events layer */
+.calendarEventsLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0.125rem;
+  padding: 0 0.5rem;
+  pointer-events: none;
+  border: none;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.calendarEventsLayer .calendarEventContainer {
+  pointer-events: auto;
+}
+
+/* Event block */
+.calendarEventContainer {
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  border: none;
+  outline: 1px solid black;
+  border-left: 4px solid var(--event-color, #1a73e8);
+  border-radius: 4px;
+  padding: 0.375rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.125rem;
+  text-align: left;
+  overflow: hidden;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.calendarEventContainer:hover {
+  background-color: color-mix(in srgb, var(--event-color) 20%, transparent);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.calendarEventTime {
+  order: -1;
+  font-size: 0.6875rem;
+  color: #5f6368;
+  font-weight: 500;
+}
+
+.calendarEventTitle {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #202124;
+  line-height: 1.3;
+}
+
+.calendarEventDescription {
+  font-size: 0.75rem;
+  color: #5f6368;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Short events: time + title in a single header line */
+.calendarEventContainer--compact {
+  justify-content: center;
+  padding: 0.2rem 0.5rem;
+}
+
+.calendarEventContainer--compact .calendarEventHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.calendarEventContainer--compact .calendarEventTime {
+  flex-shrink: 0;
+  order: 0;
+  font-size: 0.625rem;
+}
+
+.calendarEventContainer--compact .calendarEventTitle {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.75rem;
+}
+
+#calendarSettingsContainer {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  border: none;
+  width: fit-content;
+  z-index: 3;
+
+  @media (min-width: 768px) {
+    right: 1.25rem;
+  }
+}
+
+.durationSelectInput {
+  width: 100%;
+}
